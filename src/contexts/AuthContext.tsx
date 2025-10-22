@@ -1,4 +1,30 @@
-// Import React hooks dan Firebase authentication
+/**
+ * ==============================================
+ * AUTH CONTEXT - FIREBASE AUTHENTICATION
+ * ==============================================
+ *
+ * FITUR UTAMA:
+ * - Centralized authentication state management
+ * - Firebase Auth integration (Email/Password & Google OAuth)
+ * - Auto-detect auth state changes
+ * - Provide auth functions ke semua components via Context API
+ *
+ * AUTHENTICATION METHODS:
+ * 1. Email/Password Sign In - Traditional authentication
+ * 2. Email/Password Sign Up - New user registration
+ * 3. Google OAuth - One-click social authentication
+ * 4. Sign Out - Clear user session
+ *
+ * STATE MANAGEMENT:
+ * - currentUser: User object dari Firebase atau null
+ * - loading: Prevent flash of incorrect content saat initial load
+ *
+ * ARCHITECTURE:
+ * - React Context API untuk global state
+ * - Custom hook (useAuth) untuk easy access
+ * - Firebase onAuthStateChanged listener untuk real-time updates
+ */
+
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import {
   User,
@@ -10,14 +36,17 @@ import {
 } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 
-// Interface untuk tipe data Auth Context
+/**
+ * TypeScript Interface untuk Auth Context
+ * Mendefinisikan shape dari context value yang akan di-share
+ */
 interface AuthContextType {
-  currentUser: User | null; // User yang sedang login, null jika belum login
-  loading: boolean; // Status loading saat cek autentikasi
-  signInWithGoogle: () => Promise<void>; // Fungsi untuk login dengan Google
-  signInWithEmail: (email: string, password: string) => Promise<void>; // Fungsi untuk login dengan Email
-  signUpWithEmail: (email: string, password: string) => Promise<void>; // Fungsi untuk register dengan Email
-  signOut: () => Promise<void>; // Fungsi untuk logout
+  currentUser: User | null; // Firebase User object atau null jika not authenticated
+  loading: boolean; // Loading state untuk prevent premature renders
+  signInWithGoogle: () => Promise<void>; // Google OAuth sign in method
+  signInWithEmail: (email: string, password: string) => Promise<void>; // Email/password sign in
+  signUpWithEmail: (email: string, password: string) => Promise<void>; // New user registration
+  signOut: () => Promise<void>; // Sign out method untuk clear session
 }
 
 // Buat context untuk autentikasi

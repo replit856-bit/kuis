@@ -1,22 +1,54 @@
-// Import React hooks
+/**
+ * ==============================================
+ * QUIZ CONTEXT - STATE MANAGEMENT
+ * ==============================================
+ *
+ * FITUR UTAMA:
+ * - Global state management untuk quiz application
+ * - API integration dengan Open Trivia Database
+ * - Persistent state dengan localStorage (resume quiz setelah refresh)
+ * - Timer management untuk countdown functionality
+ * - Answer tracking dan scoring logic
+ *
+ * STATE YANG DI-MANAGE:
+ * - questions: Array of questions dari API
+ * - currentQuestionIndex: Tracking current position
+ * - userAnswers: History of all user responses
+ * - timeRemaining: Countdown timer in seconds
+ * - isQuizActive: Quiz session status
+ * - isQuizFinished: Completion flag
+ *
+ * KEY FEATURES:
+ * - Auto-save to localStorage untuk prevent data loss
+ * - Auto-finish quiz saat waktu habis
+ * - Sequential question flow
+ * - Score calculation dan answer validation
+ */
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-// Interface untuk tipe data pertanyaan dari API
+/**
+ * TypeScript Interface: Question
+ * Represents structure dari Open Trivia DB API response
+ */
 export interface Question {
-  category: string;
-  type: string; // "multiple" atau "boolean" (true/false)
-  difficulty: string;
-  question: string;
-  correct_answer: string;
-  incorrect_answers: string[];
+  category: string; // Topic category (e.g., "Science", "History")
+  type: string; // Question type: "multiple" atau "boolean"
+  difficulty: string; // "easy", "medium", atau "hard"
+  question: string; // Question text (may contain HTML entities)
+  correct_answer: string; // The correct answer
+  incorrect_answers: string[]; // Array of wrong answers untuk shuffling
 }
 
-// Interface untuk jawaban user
+/**
+ * TypeScript Interface: UserAnswer
+ * Stores user's response untuk detailed review
+ */
 export interface UserAnswer {
-  question: string;
-  userAnswer: string;
-  correctAnswer: string;
-  isCorrect: boolean;
+  question: string; // Question text untuk reference
+  userAnswer: string; // What user selected
+  correctAnswer: string; // The right answer
+  isCorrect: boolean; // Validation result
 }
 
 // Interface untuk tipe data Quiz Context
@@ -46,11 +78,9 @@ export const useQuiz = () => {
   return context;
 };
 
-// Key untuk localStorage
-const STORAGE_KEY = 'quizAppState';
-
-// Waktu total quiz dalam detik (2 menit = 120 detik)
-const TOTAL_QUIZ_TIME = 120;
+// Configuration Constants
+const STORAGE_KEY = 'quizAppState'; // localStorage key untuk persistence
+const TOTAL_QUIZ_TIME = 120; // Quiz duration: 2 minutes (120 seconds)
 
 // Provider component untuk Quiz
 export const QuizProvider = ({ children }: { children: ReactNode }) => {

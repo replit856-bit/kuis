@@ -1,6 +1,37 @@
-// Import hooks dari React dan Quiz Context
+/**
+ * ==============================================
+ * TIMER COMPONENT - VERCEL-INSPIRED DESIGN
+ * ==============================================
+ *
+ * FITUR UTAMA:
+ * - Countdown timer yang real-time untuk quiz
+ * - Auto-decrement setiap detik menggunakan setInterval
+ * - Format display: MM:SS untuk readability
+ * - Visual feedback berdasarkan waktu tersisa (color coding)
+ * - Automatic cleanup untuk prevent memory leaks
+ *
+ * UI/UX DESIGN:
+ * - Minimalist monochrome design (Vercel-style)
+ * - Color transitions dari hijau -> kuning -> merah
+ * - Smooth animations untuk state changes
+ * - Icon clock untuk visual clarity
+ * - Compact size tapi highly visible
+ *
+ * TECHNICAL IMPLEMENTATION:
+ * - useEffect hook untuk interval management
+ * - Proper cleanup dengan clearInterval
+ * - Dependencies array untuk re-render optimization
+ * - Context integration untuk global state
+ *
+ * COLOR LOGIC:
+ * - Time > 60s: Green (safe zone)
+ * - Time 30-60s: Orange/Yellow (warning)
+ * - Time < 30s: Red (critical)
+ */
+
 import { useEffect } from 'react';
 import { useQuiz } from '../contexts/QuizContext';
+import { Clock } from 'lucide-react';
 
 // Komponen Timer untuk menampilkan dan mengelola countdown
 const Timer = () => {
@@ -41,39 +72,45 @@ const Timer = () => {
     return `${minutesStr}:${secondsStr}`;
   };
 
-  // Tentukan warna berdasarkan sisa waktu
-  // Merah jika waktu < 30 detik, kuning jika < 60 detik, hijau jika lebih
-  const getTimerColor = () => {
+  // Dynamic styling based on remaining time - Vercel minimalist approach
+  const getTimerStyle = () => {
     if (timeRemaining < 30) {
-      return 'text-red-600 bg-red-100'; // Merah untuk waktu kritis
+      // Critical: Red dengan urgency
+      return {
+        text: 'text-red-600',
+        bg: 'bg-red-50',
+        border: 'border-red-200',
+      };
     } else if (timeRemaining < 60) {
-      return 'text-orange-600 bg-orange-100'; // Oranye untuk waktu menipis
+      // Warning: Orange untuk attention
+      return {
+        text: 'text-orange-600',
+        bg: 'bg-orange-50',
+        border: 'border-orange-200',
+      };
     }
-    return 'text-green-600 bg-green-100'; // Hijau untuk waktu aman
+    // Safe: Black untuk normal state (Vercel style)
+    return {
+      text: 'text-black',
+      bg: 'bg-gray-50',
+      border: 'border-gray-200',
+    };
   };
 
-  return (
-    // Container timer dengan styling yang berubah sesuai sisa waktu
-    <div
-      className={`${getTimerColor()} px-6 py-3 rounded-full font-bold text-xl inline-flex items-center space-x-2 shadow-lg transition-all duration-300`}
-    >
-      {/* Icon jam */}
-      <svg
-        className="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
+  const timerStyle = getTimerStyle();
 
-      {/* Tampilkan waktu dalam format MM:SS */}
-      <span>{formatTime(timeRemaining)}</span>
+  return (
+    // Timer Container - Vercel minimalist dengan subtle border
+    <div
+      className={`${timerStyle.bg} ${timerStyle.border} border px-4 py-2 rounded-lg inline-flex items-center gap-2 transition-all duration-300 shadow-sm`}
+    >
+      {/* Clock Icon - Lucide React */}
+      <Clock className={`w-4 h-4 ${timerStyle.text}`} />
+
+      {/* Time Display - Large dan readable */}
+      <span className={`${timerStyle.text} font-semibold text-sm tabular-nums`}>
+        {formatTime(timeRemaining)}
+      </span>
     </div>
   );
 };
